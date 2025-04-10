@@ -1,9 +1,6 @@
 {
   "dependencies": {
     "axios": "^1.8.2",
-    "express": "^4.21.2",
-    "express-healthcheck": "^0.1.0",
-    "mongoose": "^8.13.2",
-    "redis": "^4.7.0"
+    "express": "^4.21.2"
   }
 }
