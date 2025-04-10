@@ -1,37 +1,30 @@
 const express = require("express");
 const axios = require("axios");
+const healthcheck = require("express-healthcheck");
 
 const app = express();
 app.use(express.json());
 
+const mongoose = require("mongoose");
 
-// List of UPI servers
-const UPI_SERVERS = ["http://localhost:3001", "http://localhost:3002", "http://localhost:3003"];
+// Connect to MongoDB
+mongoose
+  .connect(
+    "mongodb+srv://pranavdhawale19:6iClPt7eX2b7ZhCD@localhost.5bk9o.mongodb.net/decentralized-upi"
+  )
+  .then(() => console.log(`✅ Connected to MongoDB for Bank Server ${PORT}`))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// Function to send payment
-async function sendPayment(amount, sender, receiver) {
-    for (const server of UPI_SERVERS) {
-        try {
-            console.log(`[${sender}] Trying UPI Server: ${server}`);
-            const response = await axios.post(`${server}/pay`, { amount, sender, receiver });
-            console.log(`[${sender}] Payment Response:`, response.data);
-            return;
-        } catch (error) {
-            console.log(`[${sender}] Failed to connect to ${server}, trying next...`);
-        }
-    }
-    console.log(`[${sender}] All UPI servers are down. Caching request...`);
-}
+const userRoutes = require("./controller/user.controller");
+app.use("/user", userRoutes);
 
-// Payment route
-app.post("/pay", (req, res) => {
-    const { amount, sender, receiver } = req.body;
-
-    console.log(`[${sender}] Initiating Payment: ₹${amount} to ${receiver}`);
-    sendPayment(amount, sender, receiver);
-
-    res.json({ message: "Payment request sent." });
-});
+// Health check
+app.use(
+  "/health",
+  healthcheck({
+    healthy: () => ({ status: "UP", service: "Client" }),
+  })
+);
 
 // Start server
 const PORT = process.env.PORT || 2001;
