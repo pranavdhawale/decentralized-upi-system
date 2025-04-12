@@ -17,9 +17,9 @@ const BANK_SERVERS = [
 ];
 
 // 🔁 UPI Server Setup
-const ALL_UPI_PORTS = [3001, 3002, 3003];
+const UPI_PORTS = [3001, 3002, 3003];
 const CURRENT_PORT = parseInt(process.env.PORT) || 3001;
-const ALL_UPI_SERVERS = ALL_UPI_PORTS.map((port) => `http://localhost:${port}`);
+const UPI_SERVERS = UPI_PORTS.map((port) => `http://localhost:${port}`);
 
 let isRetryLeader = false;
 
@@ -90,7 +90,7 @@ async function retryFailedPayments() {
 async function electRetryLeader() {
   const healthyServers = [];
 
-  for (const server of ALL_UPI_SERVERS) {
+  for (const server of UPI_SERVERS) {
     if (await checkServerHealth(server)) healthyServers.push(server);
   }
 
